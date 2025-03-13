@@ -19,8 +19,7 @@ The following **required** functionality is completed:
 
 ## Notes
 
-Describe any challenges encountered while building the app.
-
+I had challenges learning how to connect the UI to the code initially. I learned how to send popups and write functions in Swift 
 ## License
 
     Copyright [2025] [Dishita Jhawar]
