@@ -15,7 +15,7 @@ The following **required** functionality is completed:
 - [X] User can answer at least 3 different questions
       
 ## Video Walkthrough
-![Video Walkthrough] (https://github.com/user-attachments/assets/30ffb770-0591-4ebd-86d3-32400830539e)
+![Kapture 2025-03-12 at 23 11 34](https://github.com/user-attachments/assets/7dc17873-750e-400d-8555-af518349c0b5)
 
 ## Notes
 
