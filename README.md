@@ -2,7 +2,7 @@
 
 Submitted by: **Dishita Jhawar**
 
-**Country Trivia** is an app that quizzes users on general questions retrieved from a Trivia API. 
+**Advanced Trivia** is an app that quizzes users on general questions retrieved from a Trivia API. 
 
 Time spent: **2** hours spent in total
 
