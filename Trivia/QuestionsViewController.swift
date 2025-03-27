@@ -16,14 +16,14 @@ class QuestionsViewController: UIViewController {
     
     private var questionBank = [TriviaQuestion]()
     private var currentQuestionIndex = 0
+    private var wrongAnswers = 0
+    private var totalQuestions = 10
     override func viewDidLoad() {
         super.viewDidLoad()
-        questionBank = getQuestions()
-        configure(with: questionBank[currentQuestionIndex])
+        getQuestions()
     }
 
     @IBAction func choice1(_ sender: UIButton) {
-        print("choice 1 selected")
         choiceSelected(sender: sender)
     }
     
@@ -44,7 +44,7 @@ class QuestionsViewController: UIViewController {
         if let selectedTitle = sender.title(for: .normal), selectedTitle == question.correctAnswer {
             if currentQuestionIndex == questionBank.count - 1 {
                 print("game over")
-                showWinPopup()
+                showGameEndPopup()
             } else {
                 print("correct!")
                 currentQuestionIndex += 1
@@ -52,30 +52,64 @@ class QuestionsViewController: UIViewController {
             }
         } else {
             print("wrong answer")
-            showGameOverPopup()        }
+            showWrongAnswerPopup(correctAnswer: question.correctAnswer)
+        }
 
     }
-    func showWinPopup() {
-        let alert = UIAlertController(title: "Congratulations!", message: "You answered all questions correctly!", preferredStyle: .alert)
-        alert.addAction(UIAlertAction(title: "Play Again", style: .default, handler: { _ in
+    func showGameEndPopup() {
+        if self.wrongAnswers == 0{
+            let alert = UIAlertController(title: "Congratulations!", message: "You answered all questions correctly!", preferredStyle: .alert)
+            alert.addAction(UIAlertAction(title: "Play Again", style: .default, handler: { _ in
+                self.currentQuestionIndex = 0
+                self.wrongAnswers = 0
+                self.configure(with: self.questionBank[self.currentQuestionIndex])
+            }))
+            if let viewController = UIApplication.shared.windows.first?.rootViewController {
+                viewController.present(alert, animated: true, completion: nil)
+            }
+        }
+        else{
+            let alert = UIAlertController(title: "Score:", message: "You answered \(totalQuestions - self.wrongAnswers)/\(totalQuestions) questions correctly!", preferredStyle: .alert)
+            alert.addAction(UIAlertAction(title: "Play Again", style: .default, handler: { _ in
+                self.currentQuestionIndex = 0
+                self.wrongAnswers = 0
+                self.configure(with: self.questionBank[self.currentQuestionIndex])
+            }))
+            if let viewController = UIApplication.shared.windows.first?.rootViewController {
+                viewController.present(alert, animated: true, completion: nil)
+            }
+        }
+    }
+
+    func showWrongAnswerPopup(correctAnswer: String) {
+        let alert = UIAlertController(
+            title: "Wrong Answer",
+            message: "You selected the wrong answer! The correct answer was: \(correctAnswer)",
+            preferredStyle: .alert
+        )
+
+        alert.addAction(UIAlertAction(title: "Restart", style: .destructive, handler: { _ in
             self.currentQuestionIndex = 0
+            self.wrongAnswers = 0
             self.configure(with: self.questionBank[self.currentQuestionIndex])
         }))
+
+        alert.addAction(UIAlertAction(title: "Continue", style: .default, handler: { _ in
+            self.wrongAnswers += 1
+            self.currentQuestionIndex += 1
+
+            if self.currentQuestionIndex >= self.questionBank.count {
+                self.showGameEndPopup()
+            } else {
+                self.configure(with: self.questionBank[self.currentQuestionIndex])
+            }
+        }))
+
         if let viewController = UIApplication.shared.windows.first?.rootViewController {
             viewController.present(alert, animated: true, completion: nil)
         }
     }
 
-    func showGameOverPopup() {
-        let alert = UIAlertController(title: "Game Over", message: "You selected the wrong answer!", preferredStyle: .alert)
-        alert.addAction(UIAlertAction(title: "Restart", style: .default, handler: { _ in
-            self.currentQuestionIndex = 0
-            self.configure(with: self.questionBank[self.currentQuestionIndex])
-        }))
-        if let viewController = UIApplication.shared.windows.first?.rootViewController {
-            viewController.present(alert, animated: true, completion: nil)
-        }
-    }
     
     private func configure(with question: TriviaQuestion) {
         questionLabel.text = question.question
@@ -85,58 +119,19 @@ class QuestionsViewController: UIViewController {
         choice4.setTitle(question.choices[3], for: .normal)
     }
 
-    
-
-    private func getQuestions() -> [TriviaQuestion] {
-        let q1 = TriviaQuestion(
-            question: "What is the capital of Kazakhstan?",
-            choices: ["Astana", "Almaty", "Tashkent", "Bishkek"],
-            correctAnswer: "Astana",
-            shouldShuffle: false
-        )
-
-        let q2 = TriviaQuestion(
-            question: "What is the capital of Canada?",
-            choices: ["Toronto", "Ottawa", "Vancouver", "Montreal"],
-            correctAnswer: "Ottawa",
-            shouldShuffle: false
-        )
-
-        let q3 = TriviaQuestion(
-            question: "What is the capital of Bolivia?",
-            choices: ["La Paz", "Sucre", "Santa Cruz", "Cochabamba"],
-            correctAnswer: "Sucre",
-            shouldShuffle: false
-        )
-
-        let q4 = TriviaQuestion(
-            question: "What is the capital of Mongolia?",
-            choices: ["Ulaanbaatar", "Astana", "Vladivostok", "Hohhot"],
-            correctAnswer: "Ulaanbaatar",
-            shouldShuffle: false
-        )
-        
-        let q5 = TriviaQuestion(
-            question: "What is the capital of Australia?",
-            choices: ["Sydney", "Melbourne", "Canberra", "Brisbane"],
-            correctAnswer: "Canberra",
-            shouldShuffle: false
-        )
-        
-        let q6 = TriviaQuestion(
-            question: "What is the capital of Egypt?",
-            choices: ["Cairo", "Alexandria", "Giza", "Luxor"],
-            correctAnswer: "Cairo",
-            shouldShuffle: false
-        )
-
-        let q7 = TriviaQuestion(
-            question: "What is the capital of Germany?",
-            choices: ["Frankfurt", "Munich", "Berlin", "Hamburg"],
-            correctAnswer: "Berlin",
-            shouldShuffle: false
-        )
-
-        return [q1, q2, q3, q4, q5, q6, q7]
+    private func getQuestions() {
+        TriviaService.fetchTriviaQuestion(amount: totalQuestions, category: 9, difficulty: "easy", type: "multiple") { fetchedQuestions in
+            self.questionBank = fetchedQuestions.map { question in
+                let allChoices = (question.incorrect_answers + [question.correct_answer]).shuffled()
+                return TriviaQuestion(
+                    question: question.question,
+                    choices: allChoices,
+                    correctAnswer: question.correct_answer,
+                    shouldShuffle: false
+                )
+            }
+            self.currentQuestionIndex = 0
+            self.configure(with: self.questionBank[self.currentQuestionIndex])
+        }
     }
 }
