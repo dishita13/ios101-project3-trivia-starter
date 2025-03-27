@@ -1,8 +1,8 @@
-# Project 3 - *Countries Trivia*
+# Project 4 - *Trivia with API*
 
 Submitted by: **Dishita Jhawar**
 
-**Country Trivia** is an app that quizzes users on the capitals of countries. 
+**Country Trivia** is an app that quizzes users on general questions retrieved from a Trivia API. 
 
 Time spent: **2** hours spent in total
 
@@ -10,16 +10,17 @@ Time spent: **2** hours spent in total
 
 The following **required** functionality is completed:
 
-- [X] User can view the current question and 4 different answers
-- [X] User can view the next question after tapping an answer
-- [X] User can answer at least 3 different questions
+- [X] User can view and answer at least 5 trivia questions.
+- [X] App retrieves question data from the Open Trivia Database API.
+- [X] Fetch a different set of questions if the user indicates they would like to reset the game.
+- [X] Users can see score after submitting all questions.
+- [ ] True or False questions only have two options.
       
 ## Video Walkthrough
-![Kapture 2025-03-12 at 23 11 34](https://github.com/user-attachments/assets/7dc17873-750e-400d-8555-af518349c0b5)
+![Kapture 2025-03-26 at 23 36 31](https://github.com/user-attachments/assets/6818d199-0fef-4013-b4fb-a37ffef0cd46)
 
 ## Notes
-
-I had challenges learning how to connect the UI to the code initially. I learned how to send popups and write functions in Swift 
+This was a good way to learn how to connect an API to an app! 
 ## License
 
     Copyright [2025] [Dishita Jhawar]
